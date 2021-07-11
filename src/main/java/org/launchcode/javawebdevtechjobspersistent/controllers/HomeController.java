@@ -1,6 +1,8 @@
 package org.launchcode.javawebdevtechjobspersistent.controllers;
 
+import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
+import org.launchcode.javawebdevtechjobspersistent.models.Skill;
 import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by LaunchCode
@@ -40,9 +43,9 @@ public class HomeController {
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
         model.addAttribute("title", "Add Job");
-        model.addAttribute(new Job());
         model.addAttribute("employers", employerRepository.findAll());
         model.addAttribute("skills", skillRepository.findAll());
+        model.addAttribute(new Job());
         return "add";
     }
 
@@ -56,9 +59,13 @@ public class HomeController {
             model.addAttribute("skills", skillRepository.findAll());
             return "add";
         }else {
-
-
-
+            Optional<Employer> optEmployer = employerRepository.findById(employerId);
+            Employer selectedEmployer = optEmployer.get();
+            List<Skill> skillOptions = (List<Skill>) skillRepository.findAllById(skills);
+            newJob.setEmployer(selectedEmployer);
+            newJob.setSkills(skillOptions);
+            jobRepository.save(newJob);
+            //model.addAttribute("jobs", jobRepository.findAll());
             return "redirect:";
         }
     }
@@ -66,6 +73,11 @@ public class HomeController {
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
 
+        Optional optJob = jobRepository.findById(jobId);
+        if(optJob.isPresent()) {
+            Job selectedJob = (Job) optJob.get();
+            model.addAttribute("job", selectedJob);
+        }
         return "view";
     }
 

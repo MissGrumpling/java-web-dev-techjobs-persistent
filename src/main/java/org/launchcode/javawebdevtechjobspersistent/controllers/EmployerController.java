@@ -38,9 +38,10 @@ public class EmployerController {
         if (errors.hasErrors()) {
             //model.addAttribute("title", "Add new Employer");
             return "employers/add";
+        }else {
+            employerRepository.save(newEmployer);
+            return "redirect:";
         }
-        employerRepository.save(newEmployer);
-        return "redirect:";
     }
 
     @GetMapping("view/{employerId}")
