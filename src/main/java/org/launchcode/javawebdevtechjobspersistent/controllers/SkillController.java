@@ -22,10 +22,10 @@ public class SkillController {
 
     @GetMapping
     public String displaySkills(Model model){
-        //model.addAttribute("title", "Skills");
         model.addAttribute("skills", skillRepository.findAll());
         return "skills/index";
     }
+
     @GetMapping("add")
     public String displayAddSkillsForm(Model model) {
         model.addAttribute(new Skill());
