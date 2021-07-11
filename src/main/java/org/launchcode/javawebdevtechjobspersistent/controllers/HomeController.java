@@ -61,9 +61,9 @@ public class HomeController {
         }else {
             Optional<Employer> optEmployer = employerRepository.findById(employerId);
             Employer selectedEmployer = optEmployer.get();
-            List<Skill> skillOptions = (List<Skill>) skillRepository.findAllById(skills);
+            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
             newJob.setEmployer(selectedEmployer);
-            newJob.setSkills(skillOptions);
+            newJob.setSkills(skillObjs);
             jobRepository.save(newJob);
             //model.addAttribute("jobs", jobRepository.findAll());
             return "redirect:";
