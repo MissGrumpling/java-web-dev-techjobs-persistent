@@ -33,10 +33,8 @@ public class HomeController {
 
     @RequestMapping("")
     public String index(Model model) {
-
         model.addAttribute("title", "My Jobs");
         model.addAttribute("jobs", jobRepository.findAll());
-
         return "index";
     }
 
@@ -51,21 +49,19 @@ public class HomeController {
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
+                                    Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
+
+        Optional<Employer> optEmployer = employerRepository.findById(employerId);
+        Employer selectedEmployer = optEmployer.get();
+        newJob.setEmployer(selectedEmployer);
+        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        newJob.setSkills(skillObjs);
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
-            model.addAttribute("employers", employerRepository.findAll());
-            model.addAttribute("skills", skillRepository.findAll());
             return "add";
-        }else {
-            Optional<Employer> optEmployer = employerRepository.findById(employerId);
-            Employer selectedEmployer = optEmployer.get();
-            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
-            newJob.setEmployer(selectedEmployer);
-            newJob.setSkills(skillObjs);
+        } else {
             jobRepository.save(newJob);
-            //model.addAttribute("jobs", jobRepository.findAll());
             return "redirect:";
         }
     }
@@ -74,12 +70,13 @@ public class HomeController {
     public String displayViewJob(Model model, @PathVariable int jobId) {
 
         Optional optJob = jobRepository.findById(jobId);
-        if(optJob.isPresent()) {
+        if (optJob.isPresent()) {
             Job selectedJob = (Job) optJob.get();
             model.addAttribute("job", selectedJob);
+            return "view";
+        }else{
+            return "redirect:../";
         }
-        return "view";
     }
-
 
 }
